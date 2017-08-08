@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>相册</title>
+	<style>
+		/*定义所以标签的样式*/
+		*{margin:0;padding:0; list-style:none}
+
+		body{ 
+			padding:30px; background:url(../images/background.png); font-size:12px;
+		}
+		.box{ 
+			width:500px; 
+			height:400px; 
+			border:1px solid #708090; 
+			margin:0 auto; padding:10px; 
+		}
+		.box .nav{ 
+			width:500px; 
+			height:30px; 
+			border-bottom:1px solid #708090; 
+			padding-bottom:3px;
+			opacity: 0.5;
+			filter:alpha(opacity=50);
+		}
+		.nav li{ 
+			float:left; 
+			width:80px; 
+			height:30px; 
+			background:#708090; 
+			color:#fff; 
+			font-size: 15px;
+			margin-right:5px; 		
+			line-height:30px; 
+			text-align:center; 
+			cursor:pointer;
+			opacity: 0.5;
+			filter:alpha(opacity=50);
+		}
+		.nav li.cur{ 
+			background:#791b1b
+		}
+		.box img{ 
+			width:438px; height:400px;
+		}
+		.list{ 
+			width:500px; 
+			height:365px; 
+			display:none; 
+			margin-top:4px; 
+			overflow:hidden;
+		}
+		.list_bd{ 
+			width:438px; 
+			height:365px; 
+			overflow:hidden; 
+			float:left;
+		}
+		.list_nav{ 
+			width:60px; 
+			height:365px; 
+			float:right
+		}
+		.list_nav li{ 
+			width:100%; 
+			height:40px; 
+			background:#708090; 
+			color:#fff;
+			font-size: 15px; 
+			text-align:center; 		
+			line-height:40px; 
+			margin-bottom:1px;
+			opacity: 0.5;
+			filter:alpha(opacity=50);
+		}
+		.list_nav li.cur{ 
+			background:#791b1b
+		}
+		.show{ 
+			display:block;
+		}
+		.hide{ 
+			display:none;
+		}
+	</style>
+	<!-- 声明使用JS语言和文件地址 -->
+	<script type="text/javascript" src="../global.js.下载"></script>
+	<script type="text/javascript">
+		window.onload = function(){
+			var aDiv = getClass(document,'.list');
+			var	oUl = getClass(document,'.nav')[0],aBtn = getTagName(oUl,'li');	   
+			var timer = null,t = 0,b = 0;
+			fnAutoPlay(aDiv[0]);
+			// 自动播放每一组播放完回调自已切换下一组
+		    function fnAutoPlay(e,n){
+				var aLi = getTagName(e,'li'),aP = getTagName(e,'p');
+				var n = n||0;
+				fnActive(aLi,aP,n%aLi.length);
+				timer = setInterval(function(){
+					n++	;
+					b = n;
+					fnActive(aLi,aP,n%aLi.length)	;
+					if(n%aLi.length === 0){
+						clearInterval(timer);
+						t++	;
+						fnActive(aBtn,aDiv,t%aDiv.length);
+						fnAutoPlay(aDiv[t%aDiv.length])		
+					}
+				},2000)		
+			}	
+			for(var i = 0; i < aDiv.length; i++){
+				fnMouse(aDiv[i])
+			}
+			// 鼠标移入停止播放
+			function fnMouse(e){
+				var aLi = getTagName(e,'li'),
+					 aP = getTagName(e,'p'),
+					 aImg = getTagName(e,'img');
+				for(var i = 0; i < aLi.length; i++){
+					(function(index){
+						aP[index].onmouseover = aLi[index].onmouseover = function(){	
+							clearInterval(timer);
+							fnActive(aLi,aP,index)
+						};
+						aP[index].onmouseout = aLi[index].onmouseout = function(){
+							fnAutoPlay(e,index)						
+						}
+					})(i)			
+				}
+			}
+			function fnActive(ele,ele2,n){
+				for(var i = 0 ; i < ele.length; i++) {
+					ele[i].className = '';
+					ele2[i].style.display = 'none'
+				}		
+				ele[n].className = 'cur';
+				ele2[n].style.display = 'block'
+			}
+			// 主菜单移入事件 如果不是选中状态清0 当前下的所有li的Active清空,默认第一个选中
+			// 主菜单移开事件 如果当前选中状态记录N的值，移开后继续从N开始
+			for(var i = 0; i < aBtn.length; i++){
+				(function(index){
+					aBtn[index].onmouseover = function(){				
+						clearInterval(timer);
+						if(aBtn[index].className != 'cur'){
+							b = 0;
+							var aLi = getTagName(aDiv[index],'li');
+							var  aP = getTagName(aDiv[index],'p');
+							fnActive(aLi,aP,b)			
+						}
+						fnActive(aBtn,aDiv,index)
+					};
+					aBtn[index].onmouseout = function(){
+						fnAutoPlay(aDiv[index],b);
+						t = index				
+					}
+				})(i)		
+			}	
+		}		
+	</script>
+</head>
+<body>
+	<div>
+		<a href="../1.html">
+			<img src="../images/home.png" style="float: right; width: 50px; margin-right: 25%" />
+		</a>
+	</div>
+	<div id="wrap" class="box">    
+    	<ul class="nav">
+        	<li class="">相册一</li>
+            <li class="cur">相册二</li>
+        </ul>  
+                                             
+        <div class="list show" style="display: none;">
+            <ul class="list_nav">
+                <li class="cur">1</li>
+                <li class="">2</li>
+                <li class="">3</li>
+                <li class="">4</li>
+            </ul>
+            <div class="list_bd">
+                <p style="display: block;"><img src="../images/1.jpg"></p>
+                <p style="display: none;"><img src="../images/2.jpg"></p>
+                <p style="display: none;"><img src="../images/0.png"></p>
+                <p style="display: none;"><img src="../images/3.png"></p>
+            </div>            	
+        </div>                
+        <div class="list" style="display: block;">
+            <ul class="list_nav">
+                <li class="cur">1</li>
+                <li class="">2</li>
+                <li class="">3</li>
+                <li class="">4</li>
+            </ul>
+            <div class="list_bd">
+                <p style="display: block;"><img src="../images/4.png"></p>
+                <p style="display: none;"><img src="../images/5.png"></p>
+                <p style="display: none;"><img src="../images/6.png"></p>
+                <p style="display: none;"><img src="../images/7.png"></p>
+            </div>            	
+        </div>
+    </div>
+</body>
+</html>
